@@ -1,59 +1,102 @@
-# PatrykKaraszewski
+# 📌 Aplikacja: Lista Postów
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.2.
-
-## Development server
-
-To start a local development server, run:
+## 1️⃣ Struktura katalogów
 
 ```bash
-ng serve
+src/app/
+├── core/                     
+│   ├── services/
+│   │   ├── posts.store.ts
+│   │   └── favorites.service.ts
+│   └── models/
+│       ├── post.model.ts
+│       ├── user.model.ts
+│       └── comment.model.ts
+│
+├── shared/
+│   ├── components/
+│   │   ├── post-card/
+│   │   │   ├── post-card.component.ts
+│   │   │   └── post-card.component.html
+│   │   │
+│   │   ├── filter-bar/
+│   │   │   ├── filter-bar.component.ts
+│   │   │   └── filter-bar.component.html
+│   │   │
+│   │   └── comment-card/
+│   │       ├── comment-card.component.ts
+│   │       └── comment-card.component.html
+│   │
+│   └── ui/
+│       ├── card/
+│       │   ├── card.component.ts
+│       │   └── card.component.html
+│       │
+│       ├── select/
+│       │   ├── select.component.ts
+│       │   └── select.component.html
+│       │
+│       ├── input/
+│       │   ├── input.component.ts
+│       │   └── input.component.html
+│       │
+│       └── button/
+│           ├── button.component.ts
+│           └── button.component.html
+│
+├── features/
+│   └── posts/
+│       ├── pages/
+│       │   ├── post-list/
+│       │   │   ├── post-list.component.ts
+│       │   │   └── post-list.component.html
+│       │   │
+│       │   └── post-details/
+│       │       ├── post-details.component.ts
+│       │       └── post-details.component.html
+│
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 2️⃣ Lista komponentów
 
-## Code scaffolding
+### Shared / Components
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+**PostCardComponent** – wyświetla fragment posta, toggle ulubione, korzysta z Card i ButtonComponent.
 
-```bash
-ng generate component component-name
-```
+**FilterBarComponent** – panel filtracji: InputComponent (treść), SelectComponent (użytkownik), filtrowanie postów oznaczonych jako ulubione.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+**CommentCardComponent** – wyświetla pojedynczy komentarz w PostDetailsComponent.
 
-```bash
-ng generate --help
-```
+### Shared / UI
 
-## Building
+**CardComponent** – generyczny kontener wizualny z ramką i cieniem.
 
-To build the project run:
+**SelectComponent** – dropdown, np. wybór użytkownika.
 
-```bash
-ng build
-```
+**InputComponent** – pole tekstowe, np. do filtrowania postów.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+**ButtonComponent** – generyczny przycisk, np. do toggle ulubione lub akcji w filtrach.
 
-## Running unit tests
+### Features / Posts / Pages
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+**PostListComponent** – lista postów po filtrach, używa PostCardComponent.
 
-```bash
-ng test
-```
+**PostDetailsComponent** – szczegóły posta: pełny tytuł, treść, autor, komentarze (CommentCardComponent).
 
-## Running end-to-end tests
+## 3️⃣ Serwisy
 
-For end-to-end (e2e) testing, run:
+**PostsStore** – singleton signal store; przechowuje posty, obsługuje filtrację i cache.
 
-```bash
-ng e2e
-```
+**FavoritesService** – singleton przechowujący listę ulubionych postów; metody: `toggleFavorite()` i `isFavorite()`.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 4️⃣ Podejście do zarządzania stanem
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### PostsStore (Signal Store):
+- Centralne przechowywanie listy postów i filtrów
+- Reaktywnie powiadamia komponenty o zmianach stanu
+- Ponowne pobranie danych tylko przy zmianie filtrów lub odświeżeniu strony
+- Wykorzystuje **Angular `Resource`** do reaktywnego pobierania danych zgodnie z [Angular Signals Guide](https://angular.dev/guide/signals/resource).
+- Użycie **`injectParams()`**, do pobiernaie id posta, co pozwala automatycznie reagować na zmiany w URL. [ngxtension](https://ngxtension.netlify.app/utilities/injectors/inject-params/). 
+### FavoritesService:
+- Singleton przechowujący ulubione posty (ID)
+- Komponenty korzystają z metod `toggleFavorite()` i `isFavorite()` zamiast przechowywać lokalny stan
