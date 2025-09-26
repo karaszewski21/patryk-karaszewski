@@ -1,0 +1,6 @@
+<select (change)="onChange($event)">
+  <option value="" disabled selected>Wybierz</option>
+   @for (option of options(); track $index) {
+       <option [value]="option">{{ option }}</option>
+    }
+</select>
